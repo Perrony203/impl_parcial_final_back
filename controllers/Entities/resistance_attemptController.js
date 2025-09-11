@@ -37,7 +37,7 @@ const listAttempts = asyncHandler(async (req, res) => {
 
     const { rows, count } = await ResistanceAttempt.findAndCountAll({
         where,
-        include: [{ model: User, as: 'daemon', attributes: ['id', 'username', 'email'] }],
+        include: [{ model: User, as: 'daemon', attributes: ['id', 'name', 'email'] }],
         offset,
         limit,
         order: [['id', 'DESC']],
@@ -51,7 +51,7 @@ const listAttempts = asyncHandler(async (req, res) => {
 const getAttempt = asyncHandler(async (req, res) => {
     
     const attempt = await ResistanceAttempt.findByPk(req.params.id, {
-        include: [{ model: User, as: 'daemon', attributes: ['id', 'username', 'email'] }],
+        include: [{ model: User, as: 'daemon', attributes: ['id', 'name', 'email'] }, {model: Victim, as: 'victim', attributes: ['id', 'name', 'dangerLevel']}],
     });
 
     if (!attempt) return res.status(404).json({ message: 'Not found' });
@@ -101,6 +101,17 @@ const removeAttempt = asyncHandler(async (req, res) => {
     res.status(204).send();
 });
 
+const getForVictim = asyncHandler(async (req, res) => {
+  const history = await ResistanceAttempt.findByPk(req.params.id, {
+    attributes: ['state', 'title', 'content', 'createdAt'],
+    include: [{ model: User, as: 'daemon', attributes: ['id', 'name', 'email'] }, { model: Victim, as: 'victim', attributes: ['id', 'name', 'dangerLevel'] }]
+  });
 
-module.exports = { createAttempt, listAttempts, getAttempt, updateAttempt, removeAttempt };
+  if (!history) return res.status(404).json({ message: 'Not found' });
+
+  res.json(history);
+});
+
+
+module.exports = { createAttempt, listAttempts, getAttempt, updateAttempt, removeAttempt, getForVictim };
 

@@ -2,7 +2,6 @@
 const { RewardPunishment, User } = require('../../models');
 const { asyncHandler } = require('../../middleware/authMiddleware');
 
-
 // POST /rewards (superadmin)
 const createRewardPunishment = asyncHandler(async (req, res) => {
 
@@ -18,7 +17,6 @@ const createRewardPunishment = asyncHandler(async (req, res) => {
     res.status(201).json(item);
 });
 
-
 // GET /rewards (superadmin list all) or /rewards/my (daemon list own)
 const listAll = asyncHandler(async (req, res) => {
 
@@ -30,12 +28,11 @@ const listAll = asyncHandler(async (req, res) => {
         offset,
         limit,
         order: [['id', 'DESC']],
-        include: [{ model: User, as: 'assignedDaemon', attributes: ['id', 'username', 'email'] }],
+        include: [{ model: User, as: 'assignedDaemon', attributes: ['id', 'name', 'email'] }],
     });
 
     res.json({ page, limit, total: count, data: rows });
 });
-
 
 const listMine = asyncHandler(async (req, res) => {
     
@@ -47,5 +44,15 @@ const listMine = asyncHandler(async (req, res) => {
     res.json(items);
 });
 
+const getForDaemon = asyncHandler(async (req, res) => {
+  const history = await RewardPunishment.findByPk(req.params.id, {
+    attributes: ['id', 'type', 'description', 'createdAt'],
+  });
 
-module.exports = { createRewardPunishment, listAll, listMine };
+  if (!history) return res.status(404).json({ message: 'Not found' });
+
+  res.json(history);
+});
+
+
+module.exports = { createRewardPunishment, listAll, listMine, getForDaemon };

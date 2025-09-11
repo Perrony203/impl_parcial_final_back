@@ -7,5 +7,6 @@ const { authenticateJWT, authorizeRoles } = require('../../middleware/authMiddle
 router.post('/', authenticateJWT, authorizeRoles('superadmin'), rewardPunishmentController.createRewardPunishment);
 router.get('/', authenticateJWT, authorizeRoles('superadmin'), rewardPunishmentController.listAll);
 router.get('/my', authenticateJWT, authorizeRoles('daemon'), rewardPunishmentController.listMine);
+router.get('/daemon/:id', authenticateJWT, authorizeRoles('superadmin'), rewardPunishmentController.getForDaemon);
 
 module.exports = router;

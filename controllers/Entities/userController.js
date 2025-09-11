@@ -11,7 +11,7 @@ const listUsers = asyncHandler(async (req, res) => {
     const offset = (page - 1) * limit;
 
     const { rows, count } = await User.findAndCountAll({
-        attributes: ['id', 'username', 'email', 'role', 'createdAt'],
+        attributes: ['id', 'name', 'email', 'role', 'createdAt'],
         offset,
         limit,
         order: [['id', 'DESC']],
@@ -24,7 +24,7 @@ const listUsers = asyncHandler(async (req, res) => {
 // GET /users/:id (superadmin)
 const getUser = asyncHandler(async (req, res) => {
 
-    const user = await User.findByPk(req.params.id, { attributes: ['id', 'username', 'email', 'role', 'createdAt'] });
+    const user = await User.findByPk(req.params.id, { attributes: ['id', 'name', 'email', 'role', 'createdAt'] });
     if (!user) return res.status(404).json({ message: 'Not found' });
 
     res.json(user);
@@ -37,14 +37,14 @@ const updateUser = asyncHandler(async (req, res) => {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ message: 'Not found' });
 
-    const { username, email, role } = req.body || {};
+    const { name, email, role } = req.body || {};
     await user.update({
-        ...(username !== undefined ? { username } : {}),
+        ...(name !== undefined ? { name } : {}),
         ...(email !== undefined ? { email } : {}),
         ...(role !== undefined ? { role } : {}),
     });
 
-    res.json({ id: user.id, username: user.username, email: user.email, role: user.role });
+    res.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 });
 
 

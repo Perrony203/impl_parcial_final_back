@@ -10,7 +10,7 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
-      username: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
@@ -27,6 +27,33 @@ module.exports = {
       role: {
         type: Sequelize.ENUM('superadmin', 'daemon'),
         allowNull: false,
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW'),
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW'),
+      },
+    });
+
+    await queryInterface.createTable('Victims', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      dangerLevel: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -77,13 +104,12 @@ module.exports = {
       content: {
         type: Sequelize.TEXT,
         allowNull: false,
-      },      
-      createdAt: {
+      },   
+      state: {
+        type: Sequelize.ENUM('Pending', 'In_proggress', 'Resolved', 'Rejected'),
         allowNull: false,
-        primaryKey: true,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
-      },
+        defaultValue: 'Pending'
+      },      
       createdBy: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -94,16 +120,27 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      victimName: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      state: {
-        type: Sequelize.ENUM('Pending', 'In_proggress', 'Resolved', 'Rejected'),
+      victimId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 'Pending'
+        references: {
+          model: 'Victims',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      }, 
+      createdAt: {
+        allowNull: false,
+        primaryKey: true,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW'),
+      },     
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW'),
       },
-
     });
 
     // Tabla RewardsPunishments
@@ -174,8 +211,10 @@ module.exports = {
     // Eliminar tablas en orden inverso para evitar errores de FK
     await queryInterface.dropTable('ResistanceContent');
     await queryInterface.dropTable('RewardsPunishments');
+    await queryInterface.dropTable('ResistanceAttempts');
     await queryInterface.dropTable('Reports');
     await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('Victims');
 
     // Eliminar enums
     await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Users_role";');

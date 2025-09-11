@@ -34,7 +34,7 @@ const leaderboard = asyncHandler(async (req, res) => {
         group: ['createdBy'],
         order: [[require('sequelize').literal('count'), 'DESC']],
         limit,
-        include: [{ model: User, as: 'daemon', attributes: ['id', 'username'] }],
+        include: [{ model: User, as: 'daemon', attributes: ['id', 'name'] }],
     });
     
     res.json(rows);

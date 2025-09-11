@@ -17,7 +17,7 @@ const authenticateJWT = asyncHandler(async (req, res, next) => {
         // Optionally fetch fresh user (ensures not deleted/role changed)
         const user = await User.findByPk(payload.id);
         if (!user) return res.status(401).json({ message: 'User no longer exists' });
-        req.user = { id: user.id, role: user.role, username: user.username, email: user.email };
+        req.user = { id: user.id, role: user.role, name: user.name, email: user.email };
         next();
     } catch (err) {
     return res.status(401).json({ message: 'Invalid or expired token' });

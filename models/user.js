@@ -6,8 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       User.hasMany(models.ResistanceAttempt, {
         foreignKey: 'createdBy'
-      });
-      
+      });      
       User.hasMany(models.RewardPunishment, {
         foreignKey: 'daemon'
       });
@@ -16,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
 
   User.init(
     {
-      username: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,

@@ -14,11 +14,12 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 
-const reportRoutes = require("./routes/entities/report");
-const resistance_contentRoutes = require("./routes/entities/resistance_content");
+const reportRoutes = require("./routes/entities/reportRoutes");
+const resistance_contentRoutes = require("./routes/entities/resistance_contentRoutes");
 const resistance_attemptRoutes = require("./routes/entities/resistance_attemptRoutes");
-const reward_punishmentRoutes = require("./routes/entities/reward_punishment");
+const reward_punishmentRoutes = require("./routes/entities/reward_punishmentRoutes");
 const userRoutes = require("./routes/entities/userRoutes");
+const victimRoutes = require("./routes/entities/victimRoutes");
 
 const userAuthRoutes = require("./routes/authentication/userRoutes"); 
 
