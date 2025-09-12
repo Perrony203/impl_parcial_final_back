@@ -26,10 +26,11 @@ const userAuthRoutes = require("./routes/authentication/userRoutes");
 app.use("/badPlan/reports", reportRoutes);
 app.use("/badPlan/content", resistance_contentRoutes);
 app.use("/badPlan/attempts", resistance_attemptRoutes);
-app.use("/badPlan/rewards-punishments", reward_punishmentRoutes);
+app.use("/badPlan/rewards", reward_punishmentRoutes);
 app.use("/badPlan/users", userRoutes);
+app.use("/badPlan/victims", victimRoutes);
 
-app.use("/badPlan/auth/user", userAuthRoutes);
+app.use("/badPlan/auth", userAuthRoutes);
 
 const PORT = 3000;
 

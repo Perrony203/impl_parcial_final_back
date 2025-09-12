@@ -5,7 +5,6 @@ const { authenticateJWT, authorizeRoles } = require('../../middleware/authMiddle
 
 // Público
 router.get('/', contentController.listContent);
-router.get('/:id', contentController.getContent);
 //Super admin
 router.post('/', authenticateJWT, authorizeRoles('superadmin'), contentController.createContent);
 router.patch('/:id', authenticateJWT, authorizeRoles('superadmin'), contentController.updateContent);

@@ -10,6 +10,7 @@ const createRewardPunishment = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'daemonId, type, description are required' });
     }
 
+    if (type !== 'punishment' && type !== 'reward') return res.status(400).json({ message: 'type is invalid' });
     const daemon = await User.findByPk(daemonId);
     if (!daemon || daemon.role !== 'daemon') return res.status(400).json({ message: 'daemonId is invalid' });
     const item = await RewardPunishment.create({ daemon: daemonId, type, description });
@@ -28,7 +29,7 @@ const listAll = asyncHandler(async (req, res) => {
         offset,
         limit,
         order: [['id', 'DESC']],
-        include: [{ model: User, as: 'assignedDaemon', attributes: ['id', 'name', 'email'] }],
+        include: [{ model: User, attributes: ['id', 'name', 'email'] }],
     });
 
     res.json({ page, limit, total: count, data: rows });
@@ -36,6 +37,8 @@ const listAll = asyncHandler(async (req, res) => {
 
 const listMine = asyncHandler(async (req, res) => {
     
+    if (req.user.role === 'superadmin') return res.status(400).json({ message: 'Andrei, tú no tienes recompensas' });
+
     const items = await RewardPunishment.findAll({
         where: { daemon: req.user.id },
         order: [['id', 'DESC']],
@@ -45,9 +48,10 @@ const listMine = asyncHandler(async (req, res) => {
 });
 
 const getForDaemon = asyncHandler(async (req, res) => {
-  const history = await RewardPunishment.findByPk(req.params.id, {
-    attributes: ['id', 'type', 'description', 'createdAt'],
-  });
+  const history = await RewardPunishment.findAll({
+    where: { daemon: req.params.id },
+    attributes: ['type', 'description', 'createdAt'],
+  }); 
 
   if (!history) return res.status(404).json({ message: 'Not found' });
 

@@ -3,11 +3,11 @@ const router = express.Router();
 const resistanceAttemptController = require('../../controllers/Entities/resistance_attemptController');
 const { authenticateJWT, authorizeRoles } = require('../../middleware/authMiddleware');
 
-router.post('/', authenticateJWT, authorizeRoles('daemon'), resistanceAttemptController.createAttempt);
+router.post('/', authenticateJWT, authorizeRoles('daemon', 'superadmin'), resistanceAttemptController.createAttempt);
 router.get('/', authenticateJWT, authorizeRoles('superadmin'), resistanceAttemptController.listAttempts);
-router.get('/:id', authenticateJWT, resistanceAttemptController.getAttempt);
+router.get('/:id', authenticateJWT, authorizeRoles('superadmin'), resistanceAttemptController.getAttempt);
 router.get('/victim/:id', authenticateJWT, authorizeRoles('superadmin'), resistanceAttemptController.getForVictim);
-router.patch('/:id', authenticateJWT, resistanceAttemptController.updateAttempt);
+router.patch('/:id', authenticateJWT, authorizeRoles('superadmin'), resistanceAttemptController.updateAttempt);
 router.delete('/:id', authenticateJWT, authorizeRoles('superadmin'), resistanceAttemptController.removeAttempt);
 
 module.exports = router;

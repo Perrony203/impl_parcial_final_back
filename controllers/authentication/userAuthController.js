@@ -20,12 +20,13 @@ const login = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body || {};
     if (!email || !password) return res.status(400).json({ message: 'email and password are required' });
+
     const user = await User.findOne({ where: { email } });
-
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
-    const ok = await bcrypt.compare(password, user.password);
 
+    const ok = await bcrypt.compare(password, user.password);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
+
     const token = signToken(user);
 
     res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
@@ -38,12 +39,12 @@ const createDaemon = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body || {};
 
     if (!name || !email || !password) {
-        return res.status(400).json({ message: 'username, email, password are required' });
+        return res.status(400).json({ message: 'name, email, password are required' });
     }
 
     const exists = await User.findOne({ where: { email } });
-
     if (exists) return res.status(409).json({ message: 'Email already in use' });
+
     const hash = await bcrypt.hash(password, SALT_ROUNDS);
     const daemon = await User.create({ name, email, password: hash, role: 'daemon' });
 

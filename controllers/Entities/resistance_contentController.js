@@ -20,17 +20,6 @@ const listContent = asyncHandler(async (req, res) => {
     res.json({ page, limit, total: count, data: rows });
 });
 
-
-// GET /content/:id (public)
-const getContent = asyncHandler(async (req, res) => {
-
-    const item = await ResistanceContent.findByPk(req.params.id);
-    if (!item) return res.status(404).json({ message: 'Not found' });
-
-    res.json(item);
-});
-
-
 // Admin endpoints
 // POST /content (superadmin)
 const createContent = asyncHandler(async (req, res) => {
@@ -69,4 +58,4 @@ const removeContent = asyncHandler(async (req, res) => {
 });
 
 
-module.exports = { listContent, getContent, createContent, updateContent, removeContent };
+module.exports = { listContent, createContent, updateContent, removeContent };

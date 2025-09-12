@@ -37,13 +37,23 @@ const createVictim = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Name and dangerLevel are required' });
   }
 
-  const victim = await Victim.create({ name, dangerLevel });
+  // Verificar que dangerLevel sea un número entre 1 y 10
+  const parsedDangerLevel = Number(dangerLevel);
+  if (isNaN(parsedDangerLevel) || parsedDangerLevel < 1 || parsedDangerLevel > 10) {
+    return res.status(400).json({ message: 'dangerLevel must be a number between 1 and 10' });
+  }
+
+  const victim = await Victim.create({ name, dangerLevel:parsedDangerLevel });
   res.status(201).json(victim);
 });
 
 // PATCH /victims/:id → actualizar víctima (solo superadmin)
 const updateVictim = asyncHandler(async (req, res) => {
-  const victim = await Victim.findByPk(req.params.id);
+  const victim = await Victim.findOne({
+    where: { name: req.params.name },
+    attributes: ['id', 'name', 'dangerLevel', 'createdAt'],
+  });
+
   if (!victim) return res.status(404).json({ message: 'Not found' });
 
   const { name, dangerLevel } = req.body || {};
@@ -57,7 +67,7 @@ const updateVictim = asyncHandler(async (req, res) => {
 
 // DELETE /victims/:id → eliminar víctima (solo superadmin)
 const removeVictim = asyncHandler(async (req, res) => {
-  const deleted = await Victim.destroy({ where: { id: req.params.id } });
+  const deleted = await Victim.destroy({ where: { name: req.params.name } });
   if (!deleted) return res.status(404).json({ message: 'Not found' });
 
   res.status(204).send();
