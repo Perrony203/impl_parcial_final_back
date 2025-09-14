@@ -78,11 +78,10 @@ const updateAttempt = asyncHandler(async (req, res) => {
 
     const item = await ResistanceAttempt.findByPk(req.params.id);
     if (!item) return res.status(404).json({ message: 'Not found' });
-    const { title, content, victimName, state } = req.body || {};
+    const { title, content, state } = req.body || {};
     await item.update({
         ...(title !== undefined ? { title } : {}),
         ...(content !== undefined ? { content } : {}),
-        ...(victimName !== undefined ? { victimName } : {}),
         ...(state !== undefined ? { state } : {})
     });
 

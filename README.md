@@ -1,1 +1,1 @@
-# Restaurant_project
+# Back-end del proyecto de Andrei Mes Manur para implementación e integración de software. Con documentación en swagger.
