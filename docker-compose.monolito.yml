@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    container_name: badplan_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - badplan_network
+
+  postgres:
+    image: postgres:15
+    container_name: badplan_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - badplan_network
+
+networks:
+  badplan_network:
+
+volumes:
+  pgdata:

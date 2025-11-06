@@ -1,0 +1,137 @@
+services:
+  # Eureka Service Discovery Server
+  eureka:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: badplan_eureka
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - badplan_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # API Gateway Service
+  gateway:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    container_name: badplan_gateway
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./gateway-service/.env
+    depends_on:
+      eureka:
+        condition: service_healthy
+    networks:
+      - badplan_network
+    environment:
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=8761
+
+  # User Service
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: badplan_user_service
+    restart: always
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./user-service/.env
+    depends_on:
+      eureka:
+        condition: service_healthy
+      postgres_users:
+        condition: service_healthy
+    networks:
+      - badplan_network
+    environment:
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=8761
+      - DB_HOST=postgres_users
+      - DB_PORT=5432
+
+  # Resistance Service
+  # TODO: Uncomment when resistance-service is ready
+  # resistance-service:
+  #   build:
+  #     context: ./resistance-service
+  #     dockerfile: Dockerfile
+  #   container_name: badplan_resistance_service
+  #   restart: always
+  #   ports:
+  #     - "3002:3002"
+  #   env_file:
+  #     - ./resistance-service/.env
+  #   depends_on:
+  #     eureka:
+  #       condition: service_healthy
+  #     postgres_resistance:
+  #       condition: service_healthy
+  #   networks:
+  #     - badplan_network
+  #   environment:
+  #     - EUREKA_HOST=eureka
+  #     - EUREKA_PORT=8761
+  #     - DB_HOST=postgres_resistance
+  #     - DB_PORT=5432
+
+  # PostgreSQL for User Service
+  postgres_users:
+    image: postgres:15
+    container_name: badplan_postgres_users
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME_USERS:-user_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD_USERS:-user_password}
+      POSTGRES_DB: badplan_users
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_users:/var/lib/postgresql/data
+    networks:
+      - badplan_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME_USERS:-user_admin} -d badplan_users"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL for Resistance Service
+  postgres_resistance:
+    image: postgres:15
+    container_name: badplan_postgres_resistance
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME_RESISTANCE:-resistance_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD_RESISTANCE:-resistance_password}
+      POSTGRES_DB: badplan_resistance
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata_resistance:/var/lib/postgresql/data
+    networks:
+      - badplan_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME_RESISTANCE:-resistance_admin} -d badplan_resistance"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  badplan_network:
+    driver: bridge
+
+volumes:
+  pgdata_users:
+  pgdata_resistance:
