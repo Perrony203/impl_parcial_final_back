@@ -15,11 +15,16 @@
  */
 function getServiceUrl(eurekaClient, serviceName) {
     try {
+        // Debug: Log all registered apps
+        const allApps = eurekaClient.cache.app || {};
+        console.log(`[Eureka Helper] All registered apps:`, Object.keys(allApps));
+
         // Get all instances of the service from Eureka
         const instances = eurekaClient.getInstancesByAppId(serviceName.toUpperCase());
 
         if (!instances || instances.length === 0) {
             console.warn(`[Eureka Helper] No instances found for service: ${serviceName}`);
+            console.warn(`[Eureka Helper] Available services:`, Object.keys(allApps));
             return null;
         }
 
@@ -27,7 +32,8 @@ function getServiceUrl(eurekaClient, serviceName) {
         const instance = instances[0];
 
         // Build the service URL
-        const protocol = instance.securePort?.['@enabled'] ? 'https' : 'http';
+        // Use HTTPS only if securePort is explicitly enabled, otherwise use HTTP
+        const protocol = (instance.securePort && instance.securePort['@enabled'] === true) ? 'https' : 'http';
         const host = instance.ipAddr || instance.hostName;
         const port = instance.port?.['$'] || instance.port;
 

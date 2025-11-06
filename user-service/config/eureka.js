@@ -4,12 +4,12 @@ const ip = require('ip');
 const eurekaHost = process.env.EUREKA_HOST || 'localhost';
 const eurekaPort = process.env.EUREKA_PORT || 8761;
 const hostName = process.env.HOSTNAME || 'localhost';
-const ipAddr = ip.address();
+const ipAddr = '127.0.0.1'; // Use localhost instead of network IP
 const port = process.env.PORT || 3001;
 
 const eurekaClient = new Eureka({
   instance: {
-    app: 'user-service',
+    app: 'USER-SERVICE',
     instanceId: `user-service:${port}`,
     hostName: hostName,
     ipAddr: ipAddr,
@@ -36,6 +36,7 @@ const eurekaClient = new Eureka({
     servicePath: '/eureka/apps/',
     maxRetries: 10,
     requestRetryDelay: 2000,
+    ssl: false,
   },
 });
 

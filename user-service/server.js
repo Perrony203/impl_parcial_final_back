@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const eurekaClient = require("./config/eureka");
+const headerAuthMiddleware = require("./middleware/headerAuthMiddleware");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,6 +16,9 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
+
+// Header Authentication Middleware (receives user info from Gateway)
+app.use(headerAuthMiddleware);
 
 // Import routes
 const userRoutes = require("./routes/entities/userRoutes");

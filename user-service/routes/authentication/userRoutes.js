@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../../controllers/authentication/userAuthController');
-const { authenticateJWT, authorizeRoles } = require('../../middleware/authMiddleware');
+const { authorizeRoles } = require('../../middleware/authMiddleware');
 
 /**
  * @swagger
@@ -67,7 +67,7 @@ router.post('/login', authController.login);
  *       201:
  *         description: Creado correctamente 
  */
-router.post('/register-daemon', authenticateJWT, authorizeRoles('superadmin'), authController.createDaemon);
+router.post('/register-daemon', authorizeRoles('superadmin'), authController.createDaemon);
 
 /**
  * @swagger
@@ -79,7 +79,7 @@ router.post('/register-daemon', authenticateJWT, authorizeRoles('superadmin'), a
  *       200:
  *         description: Usuario llamado correctamente 
  */
-router.get('/me', authenticateJWT, authController.me);
+router.get('/me', authController.me);
 
 module.exports = router;
 

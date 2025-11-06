@@ -9,7 +9,7 @@ const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
 
 
-const signToken = (user) => jwt.sign({id: user.id, role: user.role, name: user.name },
+const signToken = (user) => jwt.sign({id: user.id, role: user.role, name: user.name, email: user.email },
     process.env.JWT_SECRET,
     {expiresIn: JWT_EXPIRES_IN,}
 );

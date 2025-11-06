@@ -1,15 +1,16 @@
 const Eureka = require('eureka-js-client').Eureka;
+const ip = require('ip');
 
 const eurekaHost = process.env.EUREKA_HOST || 'localhost';
 const eurekaPort = process.env.EUREKA_PORT || 8761;
 const hostName = process.env.HOSTNAME || 'localhost';
-const ipAddr = '127.0.0.1';
-const port = process.env.PORT || 3000;
+const ipAddr = '127.0.0.1'; // Use localhost instead of network IP
+const port = process.env.PORT || 3002;
 
 const eurekaClient = new Eureka({
   instance: {
-    app: 'gateway-service',
-    instanceId: `gateway-service:${port}`,
+    app: 'RESISTANCE-SERVICE',
+    instanceId: `resistance-service:${port}`,
     hostName: hostName,
     ipAddr: ipAddr,
     statusPageUrl: `http://${hostName}:${port}`,
@@ -17,7 +18,7 @@ const eurekaClient = new Eureka({
       '$': port,
       '@enabled': true,
     },
-    vipAddress: 'gateway-service',
+    vipAddress: 'resistance-service',
     dataCenterInfo: {
       '@class': 'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo',
       name: 'MyOwn',
@@ -35,8 +36,7 @@ const eurekaClient = new Eureka({
     servicePath: '/eureka/apps/',
     maxRetries: 10,
     requestRetryDelay: 2000,
-    registryFetchInterval: 5000, // Fetch registry every 5 seconds
-    fetchRegistry: true,
+    ssl: false,
   },
 });
 

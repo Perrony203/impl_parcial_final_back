@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../../controllers/Entities/userController');
-const { authenticateJWT, authorizeRoles } = require('../../middleware/authMiddleware');
+const userController = require('../../controllers/entities/userController');
+const { authorizeRoles } = require('../../middleware/authMiddleware');
 
 /**
  * @swagger
@@ -13,7 +13,7 @@ const { authenticateJWT, authorizeRoles } = require('../../middleware/authMiddle
  *       200:
  *         description: Devolución de la lista de los usuarios 
  */
-router.get('/', authenticateJWT, authorizeRoles('superadmin'), userController.listUsers);
+router.get('/', authorizeRoles('superadmin'), userController.listUsers);
 
 /**
  * @swagger
@@ -34,7 +34,7 @@ router.get('/', authenticateJWT, authorizeRoles('superadmin'), userController.li
  *       200:
  *         description: Se devuelve el usuario. 
  */
-router.get('/:id', authenticateJWT, authorizeRoles('superadmin'), userController.getUser);
+router.get('/:id', authorizeRoles('superadmin'), userController.getUser);
 
 /**
  * @swagger
@@ -71,7 +71,7 @@ router.get('/:id', authenticateJWT, authorizeRoles('superadmin'), userController
  *       200:
  *         description: Se actualiza el usuario. 
  */
-router.patch('/:id', authenticateJWT, authorizeRoles('superadmin'), userController.updateUser);
+router.patch('/:id', authorizeRoles('superadmin'), userController.updateUser);
 
 /**
  * @swagger
@@ -92,6 +92,6 @@ router.patch('/:id', authenticateJWT, authorizeRoles('superadmin'), userControll
  *       204:
  *         description: Usuario eliminado. 
  */
-router.delete('/:id', authenticateJWT, authorizeRoles('superadmin'), userController.removeUser);
+router.delete('/:id', authorizeRoles('superadmin'), userController.removeUser);
 
 module.exports = router;

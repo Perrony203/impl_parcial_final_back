@@ -47,6 +47,14 @@ module.exports = (app, eurekaClient) => {
                     proxyReq.setHeader('x-user-email', req.headers['x-user-email']);
                 }
 
+                // Ensure body is properly forwarded for POST/PUT/PATCH requests
+                if (req.body && (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH')) {
+                    const bodyData = JSON.stringify(req.body);
+                    proxyReq.setHeader('Content-Type', 'application/json');
+                    proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+                    proxyReq.write(bodyData);
+                }
+
                 // Log the proxied request
                 console.log(`[Proxy] -> ${proxyReq.method} ${proxyReq.path}`);
             },
@@ -86,9 +94,13 @@ module.exports = (app, eurekaClient) => {
     // USER-SERVICE ROUTES
     // ============================================================
 
-    // Public routes - Authentication (login, register)
-    app.use('/badPlan/auth', createServiceProxy('USER-SERVICE'));
-    console.log('[Proxy Routes] ✓ Configured /badPlan/auth/* -> USER-SERVICE (public)');
+    // Public routes - Authentication (login only)
+    app.post('/badPlan/auth/login', createServiceProxy('USER-SERVICE'));
+    console.log('[Proxy Routes] ✓ Configured POST /badPlan/auth/login -> USER-SERVICE (public)');
+
+    // Protected routes - /auth/me and other auth routes
+    app.use('/badPlan/auth', authenticateJWT, createServiceProxy('USER-SERVICE'));
+    console.log('[Proxy Routes] ✓ Configured /badPlan/auth/* -> USER-SERVICE (protected)');
 
     // Protected routes - User management
     app.use('/badPlan/users', authenticateJWT, createServiceProxy('USER-SERVICE'));

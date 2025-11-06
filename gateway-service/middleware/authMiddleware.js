@@ -36,10 +36,11 @@ const authenticateJWT = asyncHandler(async (req, res, next) => {
         };
 
         // Propagate user information to downstream microservices via headers
+        // Only set headers if values are defined (to avoid "undefined" string values)
         req.headers['x-user-id'] = payload.id.toString();
-        req.headers['x-user-role'] = payload.role;
-        req.headers['x-user-name'] = payload.name;
-        req.headers['x-user-email'] = payload.email;
+        req.headers['x-user-role'] = payload.role || '';
+        req.headers['x-user-name'] = payload.name || '';
+        req.headers['x-user-email'] = payload.email || '';
 
         next();
     } catch (err) {
